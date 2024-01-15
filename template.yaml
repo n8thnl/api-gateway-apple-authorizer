@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  api-gateway-apple-authorizer
+
+  Sample SAM Template for api-gateway-apple-authorizer
+
+Parameters:
+  AllowResourceArn:
+    Type: String
+    Description: Api Gateway path ARN that the authorizer will allow access to
+  Audience:
+    Type: String
+    Description: iOS app bundle identifier e.g. com.example.my-app
+
+Resources:
+  AppleAuthorizer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: authorizer/
+      Handler: authorizer.handler
+      Runtime: nodejs18.x
+      Timeout: 2
+      Environment:
+        Variables:
+          ALLOW_RESOURCE_ARN: !Ref AllowResourceArn
+          AUDIENCE: !Ref Audience
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        - authorizer.ts
